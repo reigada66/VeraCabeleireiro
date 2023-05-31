@@ -1,33 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:background="@drawable/background">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <EditText
-        android:id="@+id/usernameEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Username"
-        android:background="@android:color/white"
-        android:inputType="text"
-        android:layout_margin="16dp" />
+    <data>
 
-    <EditText
-        android:id="@+id/passwordEditText"
+        <variable
+            name="loginViewModel"
+            type="com.example.veracabeleireiro.utilizadores.LoginViewModel" />
+    </data>
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Password"
-        android:background="@android:color/white"
-        android:inputType="textPassword"
-        android:layout_margin="16dp" />
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:orientation="vertical"
+            android:background="@drawable/background">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:error="@{loginViewModel.errorUsername}"
+                app:errorEnabled="true">
+
+                <EditText
+                    android:id="@+id/inUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Nome de utilizador"
+                    android:inputType="text"
+                    android:padding="8dp"
+                    android:text="@={loginViewModel.username}"
+                    android:background="@android:color/white"
+                     android:layout_margin="16dp"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:error="@{loginViewModel.errorPassword}"
+                app:errorEnabled="true">
+
+                <EditText
+                    android:id="@+id/inPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:padding="8dp"
+                    android:background="@android:color/white"
+                    android:layout_margin="16dp"
+                    android:text="@={loginViewModel.password}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
 
     <Button
         android:id="@+id/loginButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="@{()-> loginViewModel.onLoginClicked()}"
         android:text="Login"
         android:layout_margin="16dp" />
 
@@ -35,7 +75,24 @@
         android:id="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Register"
+        android:layout_marginTop="8dp"
+        android:onClick="@{()-> loginViewModel.onRegistarClicked()}"
+        android:text="Registar"
         android:layout_margin="16dp" />
 
-</LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:visibility="@{loginViewModel.busy}" />
+
+
+    </LinearLayout>
+
+</ScrollView>
+
+</layout>
