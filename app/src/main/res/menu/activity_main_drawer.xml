@@ -9,17 +9,22 @@
             android:icon="@drawable/ic_menu_camera"
             android:title="@string/menu_home" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_produtos"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Produtos" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_servicos"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Marcação" />
 
         <item
-            android:id="@+id/Account"
+            android:id="@+id/nav_register"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Conta" />
+            android:title="Registar" />
+
+        <item
+            android:id="@+id/nav_login"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="Login" />
     </group>
 </menu>

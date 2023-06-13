@@ -6,10 +6,12 @@ import androidx.lifecycle.ViewModel;
 
 public class RegisterViewModel extends ViewModel {
     public MutableLiveData<String> errorPassword = new MutableLiveData<>();
+    public MutableLiveData<String> errorPassword2 = new MutableLiveData<>();
     public MutableLiveData<String> errorEmail = new MutableLiveData<>();
 
     public MutableLiveData<String> email = new MutableLiveData<>();
     public MutableLiveData<String> password = new MutableLiveData<>();
+    public MutableLiveData<String> password2 = new MutableLiveData<>();
     public MutableLiveData<String> username = new MutableLiveData<>();
     public MutableLiveData<Boolean> estado = new MutableLiveData<>();
 
@@ -46,6 +48,12 @@ public class RegisterViewModel extends ViewModel {
 
 
     public void onLoginClicked() {
+
+        getBusy().setValue(0); //View.VISIBLE
+        estado.setValue(true);
+    }
+
+    public void onRegisterClicked() {
 
         getBusy().setValue(0); //View.VISIBLE
         estado.setValue(true);

@@ -13,10 +13,6 @@ public class Utilizador {
     private String mPassword;
     @SerializedName("foto")
     private String mFoto;
-    @SerializedName("discordId")
-    private String mDiscordId;
-    @SerializedName("pontuacao")
-    private Integer mPontuacao;
 
     public String getmUsername() {
         return mUsername;
@@ -59,45 +55,26 @@ public class Utilizador {
         this.mFoto = mFoto;
     }
 
-    public String getmDiscordId() {
-        if (mDiscordId == null) {
-            return "";
-        }
-        return mDiscordId;
-    }
 
-    public void setmDiscordId(String mDiscordId) {
-        this.mDiscordId = mDiscordId;
-    }
-
-    public Integer getmPontuacao() {
-        if (mPontuacao == null) {
-            return 0;
-        }
-        return mPontuacao;
-    }
-
-    public void setmPontuacao(Integer mPontuacao) {
-        this.mPontuacao = mPontuacao;
-    }
-
-    public Utilizador(String username, String email, String password) {
+    public Utilizador(String username, String password) {
         mUsername = username;
-        mEmail = email;
         mPassword = password;
     }
 
-    public Utilizador(String username, String email, String foto, String discord, Integer pontuacao) {
+    public Utilizador(String username, String email, String foto) {
         mUsername = username;
         mEmail = email;
         mFoto = foto;
-        mDiscordId = discord;
-        mPontuacao = pontuacao;
     }
 
 
     public boolean isEmailValid() {
         return Patterns.EMAIL_ADDRESS.matcher(mEmail).matches();
+    }
+
+
+    public boolean isUsernameValid() {
+        return mUsername.length() > 5;
     }
 
 

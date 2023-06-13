@@ -1,22 +1,23 @@
 package com.example.veracabeleireiro.utilizadores;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 import android.os.Bundle;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
 import com.example.veracabeleireiro.R;
 import com.example.veracabeleireiro.databinding.FragmentLoginBinding;
+import android.util.Patterns;
 
 public class LoginFragment extends Fragment {
 
@@ -26,8 +27,8 @@ public class LoginFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        LoginViewModel loginViewModel =
-                new ViewModelProvider(this).get(LoginViewModel.class);
+
+        LoginViewModel loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
         loginbinding = FragmentLoginBinding.inflate(inflater, container, false);
         View root = loginbinding.getRoot();
@@ -35,6 +36,7 @@ public class LoginFragment extends Fragment {
         loginbinding.setLifecycleOwner(this);
 
         loginViewModel.getRegistado().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+
 
             @Override
             public void onChanged(@Nullable Boolean registo) {
@@ -45,25 +47,27 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        loginViewModel.getEmail().observe(getViewLifecycleOwner(), new Observer<String>() {
-
+        // Observe the estado LiveData
+        loginViewModel.getEstado().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
-            public void onChanged(@Nullable String email) {
-                if (Patterns.EMAIL_ADDRESS.matcher(email).matches())
-                    loginViewModel.errorEmail.setValue("Email ok!");
-                else
-                    loginViewModel.errorEmail.setValue("Email incorreto!");
+            public void onChanged(Boolean estado) {
+                if (estado) {
+                    // Navigate to nav_home using the navController
+ //                   navController.navigate(R.id.action_nav_login_to_nav_home);
+                    navController.navigate(R.id.nav_home); // Update to nav_home destination
+
+                }
             }
         });
 
-        loginViewModel.getUser().observe(getViewLifecycleOwner(), new Observer<Utilizador>() {
+
+        loginViewModel.getUsername().observe(getViewLifecycleOwner(), new Observer<String>() {
 
             @Override
-            public void onChanged(@Nullable Utilizador user) {
-                if (user.getmEmail().length() > 0 || user.getmPassword().length() > 0)
-                    Toast.makeText(getActivity(), "email : " + user.getmEmail() + " password " + user.getmPassword(), Toast.LENGTH_SHORT).show();
+            public void onChanged(@Nullable String username) {
             }
         });
+
 
         return root;
     }

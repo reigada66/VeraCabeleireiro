@@ -1,93 +1,147 @@
 package com.example.veracabeleireiro.utilizadores;
+import androidx.fragment.app.Fragment;
 
 import android.annotation.SuppressLint;
-import android.os.Handler;
+import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import okhttp3.ResponseBody;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.Call;
+import retrofit2.Response;
+import androidx.navigation.NavController;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
-public class LoginViewModel extends ViewModel {
+import com.example.veracabeleireiro.R;
 
+import retrofit2.Callback;public class LoginViewModel extends ViewModel {
+
+    public interface ApiService {
+        @GET("csrf-token/")
+        Call<ResponseBody> getCsrfToken();
+
+        @POST("login/")
+        Call<LoginResponse> loginUser(@Body LoginRequest loginRequest);
+    }
+
+    private Context context; // Add a Context field
 
     public MutableLiveData<String> errorPassword = new MutableLiveData<>();
-    public MutableLiveData<String> errorEmail = new MutableLiveData<>();
+    public MutableLiveData<String> errorUsername = new MutableLiveData<>();
 
-    public MutableLiveData<String> email = new MutableLiveData<>();
-    public MutableLiveData<String> password = new MutableLiveData<>();
     public MutableLiveData<String> username = new MutableLiveData<>();
+    public MutableLiveData<String> password = new MutableLiveData<>();
+    private MutableLiveData<String> email = new MutableLiveData<>();
     public MutableLiveData<Boolean> estado = new MutableLiveData<>();
     public MutableLiveData<Boolean> registado = new MutableLiveData<>();
+    public MutableLiveData<String> mensagem = new MutableLiveData<>();
 
-    public MutableLiveData<Integer> busy;
-
-    LiveData<String> getEmail(){
-        return email;
-    }
-    LiveData<String> getUsername(){
+    public MutableLiveData<String> getUsername(){
         return username;
     }
     LiveData<Boolean> getEstado() {return estado; }
     LiveData<Boolean> getRegistado() {return registado; }
-    public MutableLiveData<Integer> getBusy() {
-
-        if (busy == null) {
-            busy = new MutableLiveData<>();
-            busy.setValue(8);
-        }
-
-        return busy;
-    }
 
 
     public LoginViewModel() {
         registado.setValue(false);
     }
 
-    private MutableLiveData<Utilizador> userMutableLiveData;
-
-    LiveData<Utilizador> getUser() {
-        if (userMutableLiveData == null) {
-            userMutableLiveData = new MutableLiveData<>();
-        }
-
-        return userMutableLiveData;
-    }
 
     @SuppressLint("RestrictedApi")
     public void onRegistarClicked() {
         registado.setValue(true);
-        errorEmail.setValue("estala");
+//        errorUsername.setValue("estala");
 
-     }
+    }
+    private NavController navController;
+
+    public void setNavController(NavController navController) {
+        this.navController = navController;
+    }
 
     public void onLoginClicked() {
+        mensagem.setValue("a tentar");
 
-        getBusy().setValue(0); //View.VISIBLE
-        new Handler().postDelayed(new Runnable() {
+        // Create a Retrofit instance
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://leonardomcp640.pythonanywhere.com/users/api/")  // Replace with your Django server's API base URL
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // Create an API service interface
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        // Make a request to fetch the CSRF token
+        Call<ResponseBody> csrfTokenCall = apiService.getCsrfToken();
+        csrfTokenCall.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void run() {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    // CSRF token fetched successfully, proceed with login request
+ // Fetch the CSRF token
+                    String csrfToken = response.headers().get("csrftoken");
 
+// Create a LoginRequest object with the username, password, and CSRF token
+                    LoginRequest loginRequest = new LoginRequest(username.getValue(), password.getValue(), csrfToken);
 
-                Utilizador user = new Utilizador(username.getValue(), "seila@gmail.come", password.getValue());
+                    mensagem.setValue("request");
 
-                if (!user.isEmailValid()) {
-                    errorEmail.setValue("Enter a valid email address");
+                    // Make the login request using the fetched CSRF token
+                    Call<LoginResponse> loginCall = apiService.loginUser(loginRequest);
+                    loginCall.enqueue(new Callback<LoginResponse>() {
+                        @Override
+                        public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                            if (response.isSuccessful()) {
+                                // Login successful, handle the response
+                                LoginResponse loginResponse = response.body();
+                                estado.setValue(true);
+                                mensagem.setValue("sucesso");
+
+                                // You can access the response data and perform necessary actions
+
+                                // Navigate to fragment_home
+                                navController.navigate(R.id.nav_home);
+                            } else {
+                                Log.d("LoginResponse", "Response code: " + response.code());
+                                Log.d("LoginResponse", "Response body: " + response.body());
+
+                                // Handle the error based on the response code and message
+                                if (response.code() == 400) {
+                                    // Invalid credentials
+                                    mensagem.setValue("Invalid credentials. Please try again.");
+                                } else {
+                                    // Other error
+                                    mensagem.setValue("Login failed. Please try again later.");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<LoginResponse> call, Throwable t) {
+                            mensagem.setValue("falha de rede");
+                            // Handle network failure or other errors
+                        }
+                    });
                 } else {
-                    errorEmail.setValue(null);
+                    // Handle the error
                 }
-
-                if (!user.isPasswordLengthGreaterThan5())
-                    errorPassword.setValue("Password Length should be greater than 5");
-                else {
-                    errorPassword.setValue(null);
-                }
-
-                userMutableLiveData.setValue(user);
-                busy.setValue(8); //8 == View.GONE
-
             }
-        }, 3000);
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                // Handle network failure or other errors
+            }
+        });
     }
 }

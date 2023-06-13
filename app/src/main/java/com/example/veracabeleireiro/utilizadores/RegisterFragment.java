@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.biblioteca.databinding.FragmentRegisterBinding;
+import com.example.veracabeleireiro.databinding.FragmentRegisterBinding;
 
 public class RegisterFragment extends Fragment {
 
